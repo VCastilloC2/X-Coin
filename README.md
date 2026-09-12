@@ -1,6 +1,21 @@
-# X-Coin - Aplicación de Monedas Internacionales
+# X-Coin — Aplicación de monedas internacionales
 
-Aplicación móvil diseñada para consultar, convertir y analizar divisas oficiales de diferentes países en tiempo real e histórico. Permite realizar conversiones de moneda, consultar información detallada, comparar tasas de cambio, visualizar rankings y examinar mediante gráficas la evolución del valor de una divisa frente a otra a lo largo del tiempo.
+Proyecto Flutter (Feature-First / Clean Architecture) generado a partir de los mockups y del documento "Diseño de Mockups y Consumo de una API"[cite: 1].
+
+## Cómo ejecutar
+
+1. `flutter pub get`
+2. `flutter run`
+
+## Estructura
+
+Explora `lib/core` (tema, constantes, widgets globales) y `lib/features/currency_converter` (data / domain / presentation).
+
+## API consumida
+
+Frankfurter API (`https://api.frankfurter.dev`) — API REST pública, sin API key, documentada en el taller[cite: 1].
+
+---
 
 ## Referencia
 
@@ -43,26 +58,30 @@ WARNING — Se renderiza como una caja de alerta amarilla. Úsala para problemas
 
 CAUTION — Se renderiza como una caja roja de peligro. Resérvala para operaciones irreversibles, escenarios de pérdida de datos o acciones que podrían romper cosas.
 
+---
+
 ## Descripción del Proyecto
 
-### Elección de la API
+### ¿Por qué se eligió la API?
 
-Se seleccionó la API de Frankfurter porque es de código abierto, no requiere clave de autenticación (API Key) para consultas básicas, ofrece tiempos de respuesta rápidos y mantiene datos actualizados proporcionados por el Banco Central Europeo.
+Se seleccionó la API de Frankfurter porque es de código abierto, no requiere autenticación (API Keys) para consultas básicas, ofrece tiempos de respuesta rápidos y mantiene datos actualizados proporcionados por el Banco Central Europeo[cite: 1].
 
 ### Servicio e Información que Proporciona
 
-Ofrece tasas de cambio históricas y actuales para las principales monedas del mundo. Devuelve datos estructurados en formato JSON con información sobre fechas, moneda base, monedas a comparar y los valores de conversión exactos.
+Ofrece tasas de cambio históricas y actuales para las principales monedas del mundo[cite: 1]. Devuelve datos estructurados en formato JSON con información sobre fechas, moneda base, monedas a comparar y los valores de conversión exactos[cite: 1].
 
 > [!NOTE]
-> La API de Frankfurter es el motor principal de datos de X-Coin. Se utiliza para poblar las listas desplegables de monedas disponibles, realizar los cálculos matemáticos en el conversor de divisas, generar las tablas de ranking del valor y proveer los puntos de datos (coordenadas) para dibujar las gráficas del historial de comportamiento del mercado.
+> La API de Frankfurter es el motor de datos de X-Coin[cite: 1]. Se utiliza para poblar las listas desplegables de monedas disponibles, realizar los cálculos matemáticos en el conversor de divisas, generar las tablas de ranking del valor y proveer los puntos de datos (coordenadas) para dibujar las gráficas del historial de comportamiento del mercado[cite: 1].
 
 ### Consumo de la API
 
-La API se consume a través de peticiones HTTP de tipo GET utilizando una arquitectura REST. Desde la aplicación móvil se implementa utilizando clientes HTTP estándar y se recibe la respuesta en formato JSON, la cual es decodificada y transformada en objetos nativos de la aplicación mediante factorías de conversión.
+La API se consume a través de peticiones HTTP de tipo GET utilizando una arquitectura REST[cite: 1]. Desde la aplicación móvil se implementa utilizando clientes HTTP estándar y se recibe la respuesta en formato JSON, la cual es decodificada y transformada en objetos nativos de la aplicación mediante factorías de conversión[cite: 1].
 
-## Mapeo de Respuestas a Modelos
+---
 
-Para manejar la información recibida, la aplicación utiliza principalmente dos modelos de datos:
+## Modelos de Datos
+
+Para manejar la información recibida, la aplicación utiliza principalmente dos clases o modelos de datos[cite: 1]:
 
 ### Modelo para el Catálogo de Monedas
 
@@ -80,63 +99,3 @@ class Currency {
     );
   }
 }
-```
-
-### Modelo para la Conversión de Moneda (Tasa de Cambio)
-
-```dart
-class ExchangeRate {
-  final String baseCurrency;
-  final String quoteCurrency;
-  final double rateValue;
-
-  ExchangeRate({
-    required this.baseCurrency,
-    required this.quoteCurrency,
-    required this.rateValue,
-  });
-
-  factory ExchangeRate.fromJson(Map<String, dynamic> json) {
-    return ExchangeRate(
-      baseCurrency: json['base'],
-      quoteCurrency: json['quote'],
-      rateValue: (json['rate'] as num).toDouble(),
-    );
-  }
-}
-```
-
-## Funciones Principales
-
-### Conversor de Divisas
-Permite convertir una cantidad de una moneda a otra consultando la tasa actual.
-- Ruta: `GET https://api.frankfurter.dev/v1/latest?base=USD&quote=COP`
-
-### Consulta de Monedas
-Permite obtener el catálogo de monedas disponibles para que el usuario pueda seleccionarlas dentro de la aplicación.
-- Ruta: `GET https://api.frankfurter.dev/v1/currencies`
-
-### Ranking de Tasas
-Permite consultar las tasas de cambio de múltiples monedas utilizando una moneda base como referencia.
-- Ruta: `GET https://api.frankfurter.dev/v1/latest?base=COP`
-
-### Comparación Histórica y Gráfica
-Permite consultar la evolución de una moneda específica frente a una moneda base en un rango de fechas determinado para trazar las gráficas interactivas.
-- Ruta: `GET https://api.frankfurter.dev/v1/2026-07-07..2026-08-12?base=USD&quote=COP`
-
-> [!TIP]
-> Puedes filtrar los rangos de tiempo de la gráfica entre 7 días, 1 semana, 1 mes, 1 año o 2 años para analizar tendencias a corto y largo plazo.
-
-## Interfaz de Usuario y Componentes Flutter
-
-La aplicación está diseñada siguiendo los lineamientos de Material 3 en Flutter. A continuación se detallan los widgets clave utilizados en cada pantalla:
-
-- **AppBar & Icon:** Encabezado con título principal e identificación de la aplicación.
-- **BottomNavigationBar & BottomNavigationBarItem:** Barra de navegación inferior con acceso a Inicio, Historial y Ajustes.
-- **ListView & ListTile:** Presentación de preferencias del sistema (Modo Oscuro, Notificaciones, Alertas de Tasa, Moneda Base) y listas de divisas favoritas.
-- **Switch:** Control interactivo para activar o desactivar el modo oscuro y notificaciones.
-- **DropdownButton:** Selección de monedas de origen y destino.
-- **LineChart:** Renderizado del historial de tasas de cambio a lo largo del tiempo.
-
-> [!WARNING]
-> Asegúrate de contar con conexión a internet para realizar la sincronización inicial del catálogo de monedas y actualizar las tasas en tiempo real.
