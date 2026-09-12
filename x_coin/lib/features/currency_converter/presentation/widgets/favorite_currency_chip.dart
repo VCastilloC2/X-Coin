@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/currency_flag.dart';
 import '../../domain/entities/currency.dart';
 
 /// Ítem de la grilla "Monedas Favoritas": bandera + código ISO sobre
@@ -32,7 +33,7 @@ class FavoriteCurrencyChip extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(currency.flagEmoji, style: const TextStyle(fontSize: 18)),
+              CurrencyFlag(isoCurrency: currency.isoCode, size: 20),
               const SizedBox(width: 8),
               Text(currency.isoCode, style: AppTypography.bodyStrong),
             ],

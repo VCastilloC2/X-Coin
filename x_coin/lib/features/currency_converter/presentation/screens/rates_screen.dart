@@ -4,6 +4,8 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/async_state_view.dart';
+import '../../../../core/widgets/currency_flag.dart';
+import '../../../../core/widgets/skeletons.dart';
 import '../../../../core/widgets/x_coin_app_bar.dart';
 import '../../../../core/widgets/x_coin_card.dart';
 import '../providers/currency_converter_provider.dart' show ViewStatus;
@@ -13,8 +15,14 @@ import '../widgets/range_selector.dart';
 import '../widgets/rate_line_chart.dart';
 
 /// Pantalla "Historial": tasa actual con gráfica de evolución y
-/// ranking de "Tasas Globales", igual al teléfono derecho del
-/// mockup 1.
+/// ranking de "Tasas Globales".
+///
+/// El par mostrado aquí (`provider.base`/`provider.quote`) y la
+/// moneda de referencia del ranking (`provider.rankingBase`) ya no
+/// están fijos: se sincronizan automáticamente con la selección de
+/// Inicio y la "Moneda Base" de Ajustes vía `RatesProvider.syncPair`
+/// / `syncRankingBase`, invocados desde los `ChangeNotifierProxyProvider`
+/// declarados en `main.dart`.
 class RatesScreen extends StatefulWidget {
   const RatesScreen({super.key});
 
@@ -39,11 +47,7 @@ class _RatesScreenState extends State<RatesScreen> {
         builder: (context, provider, _) {
           if (provider.status == ViewStatus.loading ||
               provider.status == ViewStatus.initial) {
-            return const AsyncStateView(
-              isLoading: true,
-              errorMessage: null,
-              onRetry: _noop,
-            );
+            return const RatesSkeleton();
           }
           if (provider.status == ViewStatus.error) {
             return AsyncStateView(
@@ -57,8 +61,6 @@ class _RatesScreenState extends State<RatesScreen> {
       ),
     );
   }
-
-  static void _noop() {}
 }
 
 class _RatesContent extends StatelessWidget {
@@ -77,10 +79,20 @@ class _RatesContent extends StatelessWidget {
           Text(AppStrings.currentRate, style: AppTypography.sectionLabel),
           const SizedBox(height: AppSpacing.xs),
           if (rate != null)
-            Text(
-              '1 ${rate.baseCurrency} = ${rate.rateValue.toStringAsFixed(2)} '
-              '${rate.quoteCurrency}',
-              style: AppTypography.rateHero,
+            Row(
+              children: [
+                CurrencyFlag(isoCurrency: rate.baseCurrency, size: 22),
+                const SizedBox(width: 6),
+                CurrencyFlag(isoCurrency: rate.quoteCurrency, size: 22),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    '1 ${rate.baseCurrency} = ${rate.rateValue.toStringAsFixed(2)} '
+                    '${rate.quoteCurrency}',
+                    style: AppTypography.rateHero,
+                  ),
+                ),
+              ],
             ),
           const SizedBox(height: AppSpacing.md),
 
@@ -106,9 +118,10 @@ class _RatesContent extends StatelessWidget {
               children: [
                 for (final entry in provider.ranking.entries.take(4))
                   GlobalRateTile(
-                    flagEmoji: '🏳️',
-                    pairLabel: '${provider.base}/${entry.key}',
-                    valueLabel: entry.value.toStringAsFixed(entry.value < 1 ? 6 : 2),
+                    baseIso: provider.rankingBase,
+                    quoteIso: entry.key,
+                    valueLabel:
+                        entry.value.toStringAsFixed(entry.value < 1 ? 6 : 2),
                   ),
               ],
             ),

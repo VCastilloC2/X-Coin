@@ -5,9 +5,14 @@ import '../theme/app_typography.dart';
 
 /// AppBar de marca compartida por las tres pantallas.
 ///
-/// Reproduce la cabecera de los mockups: fondo azul marino en
-/// degradado, ícono "X" y wordmark "X-Coin". Es un [PreferredSizeWidget]
-/// para poder usarse directamente en `Scaffold.appBar`.
+/// Muestra el logo oficial de X-Coin (`assets/images/xcoin_logo.png`)
+/// en un contenedor responsive de 32x32 que preserva proporción de
+/// aspecto (`BoxFit.contain`), seguido del wordmark "X-Coin". Se
+/// adapta automáticamente a modo claro/oscuro según el tema activo.
+///
+/// Si el asset del logo aún no fue agregado al proyecto (o falla al
+/// cargar), cae de forma elegante a un distintivo circular en vez de
+/// mostrar un ícono roto o un espacio vacío.
 class XCoinAppBar extends StatelessWidget implements PreferredSizeWidget {
   const XCoinAppBar({super.key, this.actions});
 
@@ -15,17 +20,21 @@ class XCoinAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      decoration: const BoxDecoration(gradient: AppColors.appBarGradient),
+      decoration: BoxDecoration(
+        gradient:
+            isDark ? AppColors.appBarGradientDark : AppColors.appBarGradient,
+      ),
       child: SafeArea(
         bottom: false,
         child: SizedBox(
           height: kToolbarHeight,
           child: Row(
             children: [
-              const SizedBox(width: 20),
-              _BrandIcon(),
-              const SizedBox(width: 8),
+              const SizedBox(width: 16),
+              const _BrandLogo(),
+              const SizedBox(width: 10),
               const Text(AppStrings.appName, style: AppTypography.brandTitle),
               const Spacer(),
               if (actions != null) ...actions!,
@@ -41,22 +50,34 @@ class XCoinAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-/// Ícono de marca "X" dentro de un contenedor circular translúcido,
-/// tal como aparece junto al wordmark en ambos mockups.
-class _BrandIcon extends StatelessWidget {
-  const _BrandIcon();
+/// Contenedor responsive de 32x32, listo para inyectar el logo
+/// oficial manteniendo proporción de aspecto.
+class _BrandLogo extends StatelessWidget {
+  const _BrandLogo();
+
+  static const double _diameter = 32;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 28,
-      height: 28,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.12),
-        shape: BoxShape.circle,
+    return SizedBox(
+      width: _diameter,
+      height: _diameter,
+      child: Image.asset(
+        'assets/images/xcoin_logo.png',
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) => Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.12),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.currency_exchange_rounded,
+            color: AppColors.textOnPrimary,
+            size: 18,
+          ),
+        ),
       ),
-      child: const Icon(Icons.close, color: AppColors.textOnPrimary, size: 16),
     );
   }
 }

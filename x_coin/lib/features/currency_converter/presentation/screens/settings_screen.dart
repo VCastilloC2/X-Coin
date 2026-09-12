@@ -4,12 +4,20 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/x_coin_app_bar.dart';
+import '../providers/currency_converter_provider.dart';
 import '../providers/settings_provider.dart';
+import '../widgets/base_currency_picker_sheet.dart';
+import '../widgets/rate_alert_sheet.dart';
 import '../widgets/settings_tile.dart';
 
-/// Pantalla "Ajustes": lista de preferencias de la app, fiel al
-/// mockup 2 ("GUÍA DE COMPONENTES FLUTTER (MATERIAL 3)"): AppBar +
-/// título + `ListView` de `ListTile` con `Switch` e íconos.
+/// Pantalla "Ajustes": preferencias de la app — modo oscuro,
+/// notificaciones, alertas de tasa y moneda base — todas
+/// funcionales y persistidas con `shared_preferences` a través de
+/// [SettingsProvider].
+///
+/// Cambiar la "Moneda Base" aquí no solo actualiza esta pantalla:
+/// vía el grafo de providers en `main.dart`, también mueve el origen
+/// del conversor en Inicio y el par/ranking consultados en Historial.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -17,8 +25,11 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const XCoinAppBar(),
-      body: Consumer<SettingsProvider>(
-        builder: (context, settings, _) {
+      body: Consumer2<SettingsProvider, CurrencyConverterProvider>(
+        builder: (context, settings, converter, _) {
+          final alert = settings.rateAlert;
+          final currenciesReady = converter.currencies.isNotEmpty;
+
           return ListView(
             padding: const EdgeInsets.all(AppSpacing.md),
             children: [
@@ -44,18 +55,20 @@ class SettingsScreen extends StatelessWidget {
               SettingsTile(
                 icon: Icons.show_chart_rounded,
                 title: AppStrings.rateAlerts,
+                subtitle: alert?.description ?? 'Sin alerta configurada',
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  // Punto de extensión: navegar a la configuración
-                  // detallada de alertas de tasa.
-                },
+                onTap: currenciesReady
+                    ? () => _openRateAlertSheet(context, settings, converter)
+                    : null,
               ),
               SettingsTile(
                 icon: Icons.public_outlined,
                 title: AppStrings.baseCurrency,
                 subtitle: settings.baseCurrency,
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => _showBaseCurrencyPicker(context, settings),
+                onTap: currenciesReady
+                    ? () => _openBaseCurrencyPicker(context, settings, converter)
+                    : null,
               ),
             ],
           );
@@ -64,31 +77,33 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showBaseCurrencyPicker(
+  Future<void> _openBaseCurrencyPicker(
     BuildContext context,
     SettingsProvider settings,
-  ) {
-    const options = ['USD', 'EUR', 'GBP', 'COP', 'JPY'];
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final iso in options)
-              ListTile(
-                title: Text(iso),
-                trailing: settings.baseCurrency == iso
-                    ? const Icon(Icons.check)
-                    : null,
-                onTap: () {
-                  settings.setBaseCurrency(iso);
-                  Navigator.of(context).pop();
-                },
-              ),
-          ],
-        ),
-      ),
+    CurrencyConverterProvider converter,
+  ) async {
+    final selected = await BaseCurrencyPickerSheet.show(
+      context,
+      currencies: converter.currencies,
+      selectedIso: settings.baseCurrency,
     );
+    if (selected != null) {
+      await settings.setBaseCurrency(selected);
+    }
+  }
+
+  Future<void> _openRateAlertSheet(
+    BuildContext context,
+    SettingsProvider settings,
+    CurrencyConverterProvider converter,
+  ) async {
+    final alert = await RateAlertSheet.show(
+      context,
+      currencies: converter.currencies,
+      initialAlert: settings.rateAlert,
+    );
+    if (alert != null) {
+      await settings.setRateAlert(alert);
+    }
   }
 }

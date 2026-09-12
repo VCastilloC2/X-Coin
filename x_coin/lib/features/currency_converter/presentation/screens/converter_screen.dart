@@ -5,7 +5,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/async_state_view.dart';
+import '../../../../core/widgets/error_retry_snackbar.dart';
 import '../../../../core/widgets/primary_action_button.dart';
+import '../../../../core/widgets/skeletons.dart';
 import '../../../../core/widgets/x_coin_app_bar.dart';
 import '../../../../core/widgets/x_coin_card.dart';
 import '../providers/currency_converter_provider.dart';
@@ -16,10 +18,9 @@ import '../widgets/swap_currencies_button.dart';
 
 /// Pantalla "Inicio": conversor de monedas internacionales.
 ///
-/// Reproduce el mockup 1 (teléfono izquierdo): selector de moneda de
-/// origen/destino con intercambio, monto editable mediante teclado
-/// numérico personalizado, botón "Convertir" y grilla de monedas
-/// favoritas para acceso rápido.
+/// Reproduce el mockup 1: selector de moneda de origen/destino con
+/// intercambio, monto editable mediante teclado numérico
+/// personalizado, botón "Convertir" y grilla de monedas favoritas.
 class ConverterScreen extends StatefulWidget {
   const ConverterScreen({super.key});
 
@@ -28,6 +29,10 @@ class ConverterScreen extends StatefulWidget {
 }
 
 class _ConverterScreenState extends State<ConverterScreen> {
+  /// Evita mostrar el mismo SnackBar de error repetidamente en cada
+  /// rebuild mientras el estado de error de la conversión no cambia.
+  String? _lastShownError;
+
   @override
   void initState() {
     super.initState();
@@ -42,13 +47,11 @@ class _ConverterScreenState extends State<ConverterScreen> {
       appBar: const XCoinAppBar(),
       body: Consumer<CurrencyConverterProvider>(
         builder: (context, provider, _) {
+          _maybeShowConversionError(context, provider);
+
           if (provider.currenciesStatus == ViewStatus.loading ||
               provider.currenciesStatus == ViewStatus.initial) {
-            return const AsyncStateView(
-              isLoading: true,
-              errorMessage: null,
-              onRetry: _noop,
-            );
+            return const ConverterSkeleton();
           }
           if (provider.currenciesStatus == ViewStatus.error) {
             return AsyncStateView(
@@ -63,7 +66,24 @@ class _ConverterScreenState extends State<ConverterScreen> {
     );
   }
 
-  static void _noop() {}
+  /// Muestra un SnackBar no intrusivo (con acción "Reintentar") si
+  /// falla puntualmente la conversión, sin bloquear toda la pantalla.
+  void _maybeShowConversionError(
+    BuildContext context,
+    CurrencyConverterProvider provider,
+  ) {
+    if (provider.conversionStatus != ViewStatus.error) return;
+    if (provider.errorMessage == _lastShownError) return;
+    _lastShownError = provider.errorMessage;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ErrorRetrySnackBar.show(
+        context,
+        message: provider.errorMessage ?? AppStrings.errorLoadingRate,
+        onRetry: provider.convert,
+      );
+    });
+  }
 }
 
 class _ConverterContent extends StatelessWidget {
@@ -136,15 +156,6 @@ class _ConverterContent extends StatelessWidget {
 
           NumericKeypad(onKeyTap: provider.onKeypadInput),
           const SizedBox(height: AppSpacing.md),
-
-          if (provider.conversionStatus == ViewStatus.error)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: Text(
-                provider.errorMessage ?? '',
-                style: AppTypography.caption.copyWith(color: AppColors.danger),
-              ),
-            ),
 
           PrimaryActionButton(
             label: AppStrings.convertButton,

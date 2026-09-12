@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import '../constants/app_strings.dart';
 
-/// BottomNavigationBar compartido por las tres pantallas principales.
+/// Barra de navegación inferior compartida por las tres pantallas
+/// principales (Inicio / Historial / Ajustes).
 ///
-/// Corresponde al `BottomNavigationBarBar` con sus tres
-/// `BottomNavigationBarItem` (Inicio / Historial / Ajustes) señalados
-/// en la guía de componentes (mockup 2).
+/// Usa el `NavigationBar` de Material 3 en vez del
+/// `BottomNavigationBar` clásico: trae de fábrica una animación
+/// suave del indicador de selección (píldora) y del color de los
+/// íconos al cambiar de pestaña, cumpliendo el requisito de
+/// transiciones fluidas sin lógica de animación manual.
 class XCoinBottomNavBar extends StatelessWidget {
   const XCoinBottomNavBar({
     super.key,
@@ -18,23 +21,24 @@ class XCoinBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: onTap,
-      items: const [
-        BottomNavigationBarItem(
+    return NavigationBar(
+      selectedIndex: currentIndex,
+      onDestinationSelected: onTap,
+      animationDuration: const Duration(milliseconds: 400),
+      destinations: const [
+        NavigationDestination(
           icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
+          selectedIcon: Icon(Icons.home),
           label: AppStrings.navHome,
         ),
-        BottomNavigationBarItem(
+        NavigationDestination(
           icon: Icon(Icons.bar_chart_outlined),
-          activeIcon: Icon(Icons.bar_chart),
+          selectedIcon: Icon(Icons.bar_chart),
           label: AppStrings.navHistory,
         ),
-        BottomNavigationBarItem(
+        NavigationDestination(
           icon: Icon(Icons.settings_outlined),
-          activeIcon: Icon(Icons.settings),
+          selectedIcon: Icon(Icons.settings),
           label: AppStrings.navSettings,
         ),
       ],

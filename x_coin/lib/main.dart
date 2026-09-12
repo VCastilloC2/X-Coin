@@ -15,10 +15,26 @@ void main() {
 
 /// Widget raíz de X-Coin.
 ///
-/// Registra el repositorio (única instancia, compartida por los
-/// providers de presentación) y expone los `ChangeNotifier` de cada
-/// pantalla mediante [MultiProvider], sin acoplar la UI a Flutter's
-/// data layer.
+/// Registra el repositorio (única instancia, compartida por todos
+/// los providers) y compone el estado global mediante [MultiProvider].
+/// El grafo de dependencias está diseñado a propósito para que exista
+/// una única fuente de verdad para el par de monedas en toda la app:
+///
+/// ```
+/// SettingsProvider              (Moneda Base, persistida en disco)
+///        │
+///        ▼   ChangeNotifierProxyProvider
+/// CurrencyConverterProvider     (Inicio: origen/destino, favoritas)
+///        │
+///        ▼   ChangeNotifierProxyProvider2 (junto con SettingsProvider)
+/// RatesProvider                 (Historial: gráfica + tasas globales)
+/// ```
+///
+/// Cambiar la "Moneda Base" en Ajustes actualiza el origen en Inicio,
+/// y cambiar el par en Inicio refresca automáticamente el Historial —
+/// sin que ninguna pantalla ni provider conozca directamente a los
+/// demás. Cada provider expone únicamente un método `syncX` / `setX`
+/// que main.dart invoca al observar el cambio en su dependencia.
 class XCoinApp extends StatelessWidget {
   const XCoinApp({super.key});
 
@@ -27,25 +43,59 @@ class XCoinApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<CurrencyRepository>(create: (_) => CurrencyRepositoryImpl()),
-        ChangeNotifierProvider<CurrencyConverterProvider>(
-          create: (context) => CurrencyConverterProvider(
-            repository: context.read<CurrencyRepository>(),
-          ),
-        ),
-        ChangeNotifierProvider<RatesProvider>(
-          create: (context) => RatesProvider(
-            repository: context.read<CurrencyRepository>(),
-          ),
-        ),
+
         ChangeNotifierProvider<SettingsProvider>(
           create: (_) => SettingsProvider(),
         ),
+
+        // Inicio escucha la Moneda Base de Ajustes: cada vez que
+        // cambia, `setOriginByIso` mueve el origen del conversor.
+        ChangeNotifierProxyProvider<SettingsProvider, CurrencyConverterProvider>(
+          create: (context) => CurrencyConverterProvider(
+            repository: context.read<CurrencyRepository>(),
+            initialOrigin: context.read<SettingsProvider>().baseCurrency,
+          ),
+          update: (context, settings, converter) {
+            converter ??= CurrencyConverterProvider(
+              repository: context.read<CurrencyRepository>(),
+              initialOrigin: settings.baseCurrency,
+            );
+            converter.setOriginByIso(settings.baseCurrency);
+            return converter;
+          },
+        ),
+
+        // Historial escucha tanto a Inicio (par origen/destino) como
+        // a Ajustes (moneda de referencia del ranking).
+        ChangeNotifierProxyProvider2<CurrencyConverterProvider, SettingsProvider,
+            RatesProvider>(
+          create: (context) => RatesProvider(
+            repository: context.read<CurrencyRepository>(),
+          ),
+          update: (context, converter, settings, rates) {
+            rates ??= RatesProvider(
+              repository: context.read<CurrencyRepository>(),
+            );
+            final base = converter.origin?.isoCode ?? settings.baseCurrency;
+            final quote = converter.destination?.isoCode ?? 'EUR';
+            rates
+              ..syncPair(base: base, quote: quote)
+              ..syncRankingBase(settings.baseCurrency);
+            return rates;
+          },
+        ),
       ],
-      child: MaterialApp(
-        title: AppStrings.appName,
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        home: const HomeShell(),
+      child: Consumer<SettingsProvider>(
+        builder: (context, settings, _) {
+          return MaterialApp(
+            title: AppStrings.appName,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: settings.darkMode ? ThemeMode.dark : ThemeMode.light,
+            home: const HomeShell(),
+          );
+        },
       ),
     );
   }
