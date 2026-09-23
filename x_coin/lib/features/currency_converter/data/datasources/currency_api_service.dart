@@ -27,7 +27,8 @@ class CurrencyApiService {
     final http.Response response;
     try {
       response = await _client.get(uri).timeout(const Duration(seconds: 10));
-    } catch (_) {
+    } catch (e) {
+      print('API error en $uri → $e');
       throw ApiException(AppStrings.noConnection);
     }
 

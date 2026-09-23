@@ -48,18 +48,18 @@ class AppStrings {
 class ApiConfig {
   ApiConfig._();
 
-  static const String _host = 'api.frankfurter.app';
+  static const String _host = 'api.frankfurter.dev';
 
-  static Uri currencies() => Uri.https(_host, '/currencies');
+  static Uri currencies() => Uri.https(_host, '/v1/currencies');
 
   static Uri latestRate({required String base, required String quote}) =>
-      Uri.https(_host, '/latest', {
+      Uri.https(_host, '/v1/latest', {
         'base': base,
         'symbols': quote,
       });
 
   static Uri rankingRates({required String base}) =>
-      Uri.https(_host, '/latest', {
+      Uri.https(_host, '/v1/latest', {
         'base': base,
       });
 
@@ -69,9 +69,9 @@ class ApiConfig {
     required DateTime from,
     required DateTime to,
   }) {
-    final f = _fmt(from);
-    final t = _fmt(to);
-    return Uri.https(_host, '/$f..$t', {
+    return Uri.https(_host, '/v1/latest', {
+      'from': _fmt(from),
+      'to': _fmt(to),
       'base': base,
       'symbols': quote,
     });

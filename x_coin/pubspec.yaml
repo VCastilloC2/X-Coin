@@ -49,7 +49,7 @@ dependencies:
   # --- Dashboard Analitico Historico: 4 librerias de graficos ---
   # Series nativas de velas/OHLC/rango (candlestick, hilo, bollinger
   # via RangeAreaSeries) que fl_chart no ofrece.
-  syncfusion_flutter_charts: 28.1.38
+  syncfusion_flutter_charts: ^34.2.9
   # Sucesor mantenido por la comunidad de charts_flutter, el paquete
   # que Google publicaba como "Google Charts" para Flutter
   # (descontinuado desde 2020, no compatible con null-safety).

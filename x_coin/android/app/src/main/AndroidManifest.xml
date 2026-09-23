@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Agrega esta línea aquí para permitir peticiones HTTP a APIs externas -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:label="x_coin"
         android:name="${applicationName}"
