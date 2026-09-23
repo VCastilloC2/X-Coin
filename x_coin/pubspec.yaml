@@ -49,11 +49,11 @@ dependencies:
   # --- Dashboard Analitico Historico: 4 librerias de graficos ---
   # Series nativas de velas/OHLC/rango (candlestick, hilo, bollinger
   # via RangeAreaSeries) que fl_chart no ofrece.
-  syncfusion_flutter_charts: ^27.2.5
+  syncfusion_flutter_charts: 28.1.38
   # Sucesor mantenido por la comunidad de charts_flutter, el paquete
   # que Google publicaba como "Google Charts" para Flutter
   # (descontinuado desde 2020, no compatible con null-safety).
-  community_charts_flutter: ^1.0.5
+  community_charts_flutter: ^1.0.2
   # Grammar-of-graphics: 4ta libreria, paradigma declarativo distinto
   # a las otras 3 (variables + marks en vez de un widget por tipo).
   graphic: ^2.6.0
@@ -79,10 +79,6 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
-  assets:
-    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

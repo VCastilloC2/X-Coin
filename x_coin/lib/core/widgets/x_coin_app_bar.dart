@@ -59,24 +59,18 @@ class _BrandLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: _diameter,
       height: _diameter,
-      child: Image.asset(
-        'assets/images/xcoin_logo.png',
-        fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) => Container(
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.12),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.currency_exchange_rounded,
-            color: AppColors.textOnPrimary,
-            size: 18,
-          ),
-        ),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.12),
+        shape: BoxShape.circle,
+      ),
+      child: const Icon(
+        Icons.currency_exchange_rounded,
+        color: AppColors.textOnPrimary,
+        size: 18,
       ),
     );
   }

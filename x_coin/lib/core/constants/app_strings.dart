@@ -9,7 +9,7 @@ class AppStrings {
   static const String convertTitle = 'Convertir Monedas Internacionales';
   static const String originCurrency = 'Moneda de Origen';
   static const String destinationCurrency = 'Moneda de Destino';
-  static const String amountLabel = 'Moneda de Destino';
+  static const String amountLabel = 'Monto a Convertir';
   static const String convertButton = 'Convertir';
   static const String favoriteCurrencies = 'Monedas Favoritas';
 
@@ -48,15 +48,20 @@ class AppStrings {
 class ApiConfig {
   ApiConfig._();
 
-  static const String baseUrl = 'https://api.frankfurter.dev/v2';
+  static const String _host = 'api.frankfurter.app';
 
-  static Uri currencies() => Uri.parse('$baseUrl/currencies');
+  static Uri currencies() => Uri.https(_host, '/currencies');
 
   static Uri latestRate({required String base, required String quote}) =>
-      Uri.parse('$baseUrl/latest?base=$base&symbols=$quote');
+      Uri.https(_host, '/latest', {
+        'base': base,
+        'symbols': quote,
+      });
 
   static Uri rankingRates({required String base}) =>
-      Uri.parse('$baseUrl/latest?base=$base');
+      Uri.https(_host, '/latest', {
+        'base': base,
+      });
 
   static Uri historicalRange({
     required String base,
@@ -66,11 +71,14 @@ class ApiConfig {
   }) {
     final f = _fmt(from);
     final t = _fmt(to);
-    return Uri.parse('$baseUrl/$f..$t?base=$base&symbols=$quote');
+    return Uri.https(_host, '/$f..$t', {
+      'base': base,
+      'symbols': quote,
+    });
   }
 
   static String _fmt(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-'
-      '${d.month.toString().padLeft(2, '0')}-'
-      '${d.day.toString().padLeft(2, '0')}';
+          '${d.month.toString().padLeft(2, '0')}-'
+          '${d.day.toString().padLeft(2, '0')}';
 }

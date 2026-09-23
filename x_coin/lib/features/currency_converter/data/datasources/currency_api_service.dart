@@ -69,4 +69,5 @@ class CurrencyApiService {
       ApiConfig.historicalRange(base: base, quote: quote, from: from, to: to),
     );
   }
+
 }

@@ -41,6 +41,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
+  community_charts_common:
+    dependency: transitive
+    description:
+      name: community_charts_common
+      sha256: d997ade57f15490346de46efbe23805d378a672aafbf5e47e19517964b671009
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
+  community_charts_flutter:
+    dependency: "direct main"
+    description:
+      name: community_charts_flutter
+      sha256: "4614846b99782ab79b613687704865e5468ecada3f0ad1afe1cdc3ff5b727f72"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -112,6 +128,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  graphic:
+    dependency: "direct main"
+    description:
+      name: graphic
+      sha256: f0028af737f7fdd5fd50c043af85242d72638ae040a820470208bc885a229d04
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.7.0"
   http:
     dependency: "direct main"
     description:
@@ -208,6 +232,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  path_drawing:
+    dependency: transitive
+    description:
+      name: path_drawing
+      sha256: bbb1934c0cbb03091af082a6389ca2080345291ef07a5fa6d6e078ba8682f977
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
+  path_parsing:
+    dependency: transitive
+    description:
+      name: path_parsing
+      sha256: "883402936929eac138ee0a45da5b0f2c80f89913e6dc3bf77eb65b84b409c6ca"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   path_provider_linux:
     dependency: transitive
     description:
@@ -349,6 +389,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  syncfusion_flutter_charts:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_charts
+      sha256: "9745a1afb3d14f2f8973a4422767d0124217d6727eacbbf4b2ed0dd66bc58887"
+      url: "https://pub.dev"
+    source: hosted
+    version: "28.1.38"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: f1d2b52697543e13bdefdc62d15868124a265987577f53224a7dbe176c8448f0
+      url: "https://pub.dev"
+    source: hosted
+    version: "28.2.12"
   term_glyph:
     dependency: transitive
     description:
