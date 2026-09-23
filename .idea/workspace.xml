@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="56fb7a9a-4772-49b8-9ba0-873421099051" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/x_coin/lib/core/constants/app_strings.dart" beforeDir="false" afterPath="$PROJECT_DIR$/x_coin/lib/core/constants/app_strings.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/x_coin/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/x_coin/lib/main.dart" afterDir="false" />
-    </list>
+    <list default="true" id="56fb7a9a-4772-49b8-9ba0-873421099051" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -19,6 +16,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Manuel0916"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/VCastilloC2/X-Coin.git",
+    "accountId": "17026029-319e-4cdb-83b8-9880cac5ce62"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0,
   &quot;fromUser&quot;: false
@@ -49,6 +58,7 @@
     &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
 }</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="56fb7a9a-4772-49b8-9ba0-873421099051" name="Changes" comment="" />
@@ -58,5 +68,14 @@
       <updated>1789194013334</updated>
     </task>
     <servers />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>
