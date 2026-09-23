@@ -18,10 +18,6 @@ import '../widgets/numeric_keypad.dart';
 import '../widgets/swap_currencies_button.dart';
 
 /// Pantalla "Inicio": conversor de monedas internacionales.
-///
-/// Reproduce el mockup 1: selector de moneda de origen/destino con
-/// intercambio, monto editable mediante teclado numérico
-/// personalizado, botón "Convertir" y grilla de monedas favoritas.
 class ConverterScreen extends StatefulWidget {
   const ConverterScreen({super.key});
 
@@ -30,8 +26,6 @@ class ConverterScreen extends StatefulWidget {
 }
 
 class _ConverterScreenState extends State<ConverterScreen> {
-  /// Evita mostrar el mismo SnackBar de error repetidamente en cada
-  /// rebuild mientras el estado de error de la conversión no cambia.
   String? _lastShownError;
 
   @override
@@ -67,12 +61,7 @@ class _ConverterScreenState extends State<ConverterScreen> {
     );
   }
 
-  /// Muestra un SnackBar no intrusivo (con acción "Reintentar") si
-  /// falla puntualmente la conversión, sin bloquear toda la pantalla.
-  void _maybeShowConversionError(
-    BuildContext context,
-    CurrencyConverterProvider provider,
-  ) {
+  void _maybeShowConversionError(BuildContext context, CurrencyConverterProvider provider) {
     if (provider.conversionStatus != ViewStatus.error) return;
     if (provider.errorMessage == _lastShownError) return;
     _lastShownError = provider.errorMessage;
@@ -89,7 +78,6 @@ class _ConverterScreenState extends State<ConverterScreen> {
 
 class _ConverterContent extends StatelessWidget {
   const _ConverterContent({required this.provider});
-
   final CurrencyConverterProvider provider;
 
   @override
@@ -101,8 +89,6 @@ class _ConverterContent extends StatelessWidget {
         children: [
           Text(AppStrings.convertTitle, style: AppTypography.screenTitle),
           const SizedBox(height: AppSpacing.lg),
-
-          // Moneda de Origen / Destino + intercambio.
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -129,8 +115,6 @@ class _ConverterContent extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
-
-          // Monto + resultado convertido.
           Text(AppStrings.amountLabel, style: AppTypography.sectionLabel),
           const SizedBox(height: AppSpacing.sm),
           XCoinCard(
@@ -154,10 +138,8 @@ class _ConverterContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-
           NumericKeypad(onKeyTap: provider.onKeypadInput),
           const SizedBox(height: AppSpacing.md),
-
           PrimaryActionButton(
             label: AppStrings.convertButton,
             isLoading: provider.conversionStatus == ViewStatus.loading,
@@ -182,7 +164,6 @@ class _ConverterContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
-
           Text(AppStrings.favoriteCurrencies, style: AppTypography.sectionLabel),
           const SizedBox(height: AppSpacing.sm),
           Wrap(
