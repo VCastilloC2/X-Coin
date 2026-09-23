@@ -40,7 +40,7 @@ class CurrencyConverterProvider extends ChangeNotifier {
   double? _convertedAmount;
 
   static const List<String> favoriteCodes = [
-    'USD', 'GBP', 'EUR', 'CAD', 'JPY', 'AUD',
+    'USD', 'GBP', 'EUR', 'CAD', 'JPY', 'AUD', 'COP',
   ];
 
   ViewStatus get currenciesStatus => _currenciesStatus;

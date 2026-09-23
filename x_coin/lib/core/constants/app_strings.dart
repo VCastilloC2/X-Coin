@@ -43,32 +43,29 @@ class AppStrings {
 }
 
 /// Configuración de la API pública de tasas de cambio (Frankfurter).
-/// DOCUMENTACIÓN CORRECTA:
-/// - Catálogo: /currencies
-/// - Tasa Actual: /latest?base=USD&symbols=EUR
-/// - Rango Histórico: / {from}..{to}?base=USD&symbols=EUR
+/// Implementación estricta basada en V1.
 class ApiConfig {
   ApiConfig._();
 
   static const String _host = 'api.frankfurter.dev';
 
-  /// GET /currencies
+  /// GET /v1/currencies
   static Uri currencies() => Uri.https(_host, '/v1/currencies');
 
-  /// GET /latest?base=USD&symbols=EUR
+  /// GET /v1/latest?base=USD&symbols=EUR
   static Uri latestRate({required String base, required String quote}) =>
-      Uri.https(_host, '/latest', {
+      Uri.https(_host, '/v1/latest', {
         'base': base,
         'symbols': quote,
       });
 
-  /// GET /latest?base=USD
+  /// GET /v1/latest?base=USD
   static Uri rankingRates({required String base}) =>
       Uri.https(_host, '/v1/latest', {
         'base': base,
       });
 
-  /// GET /{from}..{to}?base=USD&symbols=EUR
+  /// GET /v1/{from}..{to}?base=USD&symbols=EUR
   static Uri historicalRange({
     required String base,
     required String quote,
@@ -77,7 +74,8 @@ class ApiConfig {
   }) {
     final f = _fmt(from);
     final t = _fmt(to);
-    return Uri.https(_host, '/$f..$t', {
+    // La ruta correcta es /v1/fecha..fecha
+    return Uri.https(_host, '/v1/$f..$t', {
       'base': base,
       'symbols': quote,
     });

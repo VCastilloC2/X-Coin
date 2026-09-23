@@ -69,14 +69,27 @@ class CurrencyRepositoryImpl implements CurrencyRepository {
       from: from,
       to: to,
     );
-    final series = json['rates'] as Map<String, dynamic>;
-    final points = series.entries
+    final rates = json['rates'] as Map<String, dynamic>;
+    final points = rates.entries
         .map(
-          (e) => RatePoint(
-            date: DateTime.parse(e.key),
-            value: ((e.value as Map<String, dynamic>)[quote] as num)
-                .toDouble(),
-          ),
+          (e) {
+            final val = e.value;
+            double finalValue;
+            // CRÍTICO: La API puede devolver el valor directamente como num
+            // o como un mapa { "EUR": 1.1 } dependiendo de la versión y parámetros.
+            if (val is Map) {
+              finalValue = (val[quote] as num).toDouble();
+            } else if (val is num) {
+              finalValue = val.toDouble();
+            } else {
+              // Fallback para evitar crash si el valor es nulo o inesperado.
+              finalValue = 0.0;
+            }
+            return RatePoint(
+              date: DateTime.parse(e.key),
+              value: finalValue,
+            );
+          },
         )
         .toList();
     points.sort((a, b) => a.date.compareTo(b.date));
