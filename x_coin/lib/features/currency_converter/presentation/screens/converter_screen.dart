@@ -10,6 +10,7 @@ import '../../../../core/widgets/primary_action_button.dart';
 import '../../../../core/widgets/skeletons.dart';
 import '../../../../core/widgets/x_coin_app_bar.dart';
 import '../../../../core/widgets/x_coin_card.dart';
+import 'home_shell.dart';
 import '../providers/currency_converter_provider.dart';
 import '../widgets/currency_dropdown.dart';
 import '../widgets/favorite_currency_chip.dart';
@@ -162,6 +163,23 @@ class _ConverterContent extends StatelessWidget {
             isLoading: provider.conversionStatus == ViewStatus.loading,
             enabled: provider.canConvert,
             onPressed: provider.convert,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => HomeShell.switchTab(context, 1),
+              icon: const Icon(Icons.show_chart, size: 18),
+              label: const Text('Ver Análisis Histórico'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.primaryNavy,
+                side: const BorderSide(color: AppColors.divider),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: AppSpacing.lg),
 

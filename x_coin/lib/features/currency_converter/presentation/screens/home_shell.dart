@@ -10,6 +10,12 @@ import 'settings_screen.dart';
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 
+  /// Permite a pantallas hijas solicitar el cambio de pestaña.
+  static void switchTab(BuildContext context, int index) {
+    final state = context.findAncestorStateOfType<_HomeShellState>();
+    state?._changeIndex(index);
+  }
+
   @override
   State<HomeShell> createState() => _HomeShellState();
 }
@@ -17,7 +23,12 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
+  void _changeIndex(int index) {
+    setState(() => _index = index);
+  }
+
   static const _screens = [
+
     ConverterScreen(),
     RatesScreen(),
     SettingsScreen(),

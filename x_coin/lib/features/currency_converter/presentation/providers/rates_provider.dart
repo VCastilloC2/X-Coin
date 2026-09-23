@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../../data/datasources/currency_api_service.dart';
 import '../../domain/entities/exchange_rate.dart';
 import '../../domain/repositories/currency_repository.dart';
+import '../../../../core/constants/app_strings.dart';
 import 'currency_converter_provider.dart' show ViewStatus;
 
 /// Rango temporal seleccionable en el segmented control de la
@@ -111,7 +112,7 @@ class RatesProvider extends ChangeNotifier {
       _errorMessage = e.message;
       _status = ViewStatus.error;
     } catch (_) {
-      _errorMessage = 'No se pudieron cargar las tasas globales.';
+      _errorMessage = AppStrings.errorLoadingRate;
       _status = ViewStatus.error;
     }
     notifyListeners();

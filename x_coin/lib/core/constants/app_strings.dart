@@ -42,36 +42,42 @@ class AppStrings {
       'Sin conexión. Verifica tu red e inténtalo de nuevo.';
 }
 
-/// Configuración de la API pública de tasas de cambio (Frankfurter),
-/// según lo documentado en el taller: API abierta, sin API key,
-/// que devuelve JSON con date / base / quote(s) / rate(s).
+/// Configuración de la API pública de tasas de cambio (Frankfurter).
+/// DOCUMENTACIÓN CORRECTA:
+/// - Catálogo: /currencies
+/// - Tasa Actual: /latest?base=USD&symbols=EUR
+/// - Rango Histórico: / {from}..{to}?base=USD&symbols=EUR
 class ApiConfig {
   ApiConfig._();
 
-  static const String _host = 'api.frankfurter.dev';
+  static const String _host = 'api.frankfurter.app'; // Cambiado a .app para mayor estabilidad
 
-  static Uri currencies() => Uri.https(_host, '/v1/currencies');
+  /// GET /currencies
+  static Uri currencies() => Uri.https(_host, '/currencies');
 
+  /// GET /latest?base=USD&symbols=EUR
   static Uri latestRate({required String base, required String quote}) =>
-      Uri.https(_host, '/v1/latest', {
+      Uri.https(_host, '/latest', {
         'base': base,
         'symbols': quote,
       });
 
+  /// GET /latest?base=USD
   static Uri rankingRates({required String base}) =>
-      Uri.https(_host, '/v1/latest', {
+      Uri.https(_host, '/latest', {
         'base': base,
       });
 
+  /// GET /{from}..{to}?base=USD&symbols=EUR
   static Uri historicalRange({
     required String base,
     required String quote,
     required DateTime from,
     required DateTime to,
   }) {
-    return Uri.https(_host, '/v1/latest', {
-      'from': _fmt(from),
-      'to': _fmt(to),
+    final f = _fmt(from);
+    final t = _fmt(to);
+    return Uri.https(_host, '/$f..$t', {
       'base': base,
       'symbols': quote,
     });
