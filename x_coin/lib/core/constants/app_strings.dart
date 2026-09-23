@@ -50,10 +50,10 @@ class AppStrings {
 class ApiConfig {
   ApiConfig._();
 
-  static const String _host = 'api.frankfurter.app'; // Cambiado a .app para mayor estabilidad
+  static const String _host = 'api.frankfurter.dev';
 
   /// GET /currencies
-  static Uri currencies() => Uri.https(_host, '/currencies');
+  static Uri currencies() => Uri.https(_host, '/v1/currencies');
 
   /// GET /latest?base=USD&symbols=EUR
   static Uri latestRate({required String base, required String quote}) =>
@@ -64,7 +64,7 @@ class ApiConfig {
 
   /// GET /latest?base=USD
   static Uri rankingRates({required String base}) =>
-      Uri.https(_host, '/latest', {
+      Uri.https(_host, '/v1/latest', {
         'base': base,
       });
 
