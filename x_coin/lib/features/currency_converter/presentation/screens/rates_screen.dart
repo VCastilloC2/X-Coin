@@ -13,6 +13,7 @@ import '../providers/rates_provider.dart';
 import '../widgets/global_rate_tile.dart';
 import '../widgets/range_selector.dart';
 import '../widgets/rate_line_chart.dart';
+import '../../../history_dashboard/presentation/screens/history_dashboard_view.dart';
 
 /// Pantalla "Historial": tasa actual con gráfica de evolución y
 /// ranking de "Tasas Globales".
@@ -105,6 +106,17 @@ class _RatesContent extends StatelessWidget {
                 RangeSelector(
                   selected: provider.selectedRange,
                   onSelected: provider.selectRange,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const HistoryDashboardView()),
+                    ),
+                    icon: const Icon(Icons.insights_rounded, size: 18),
+                    label: const Text('Dashboard Analítico'),
+                  ),
                 ),
               ],
             ),

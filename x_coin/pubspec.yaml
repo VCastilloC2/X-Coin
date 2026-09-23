@@ -39,12 +39,24 @@ dependencies:
   # Cliente HTTP para consumir la API de tasas de cambio (Frankfurter)
   http: ^1.2.1
   # Gráfica de línea para el historial de tasas (pantalla "Tasa Actual")
-  fl_chart: ^0.68.0
+  fl_chart: ^1.2.0
   # Formateo de moneda/números (Text field de "Moneda de Destino")
-  intl: ^0.19.0
+  intl: ^0.20.3
   # Persistencia local de preferencias (Modo Oscuro, Moneda Base,
   # Notificaciones y Alerta de Tasa) para que sobrevivan a un reinicio.
   shared_preferences: ^2.3.2
+
+  # --- Dashboard Analitico Historico: 4 librerias de graficos ---
+  # Series nativas de velas/OHLC/rango (candlestick, hilo, bollinger
+  # via RangeAreaSeries) que fl_chart no ofrece.
+  syncfusion_flutter_charts: ^27.2.5
+  # Sucesor mantenido por la comunidad de charts_flutter, el paquete
+  # que Google publicaba como "Google Charts" para Flutter
+  # (descontinuado desde 2020, no compatible con null-safety).
+  community_charts_flutter: ^1.0.5
+  # Grammar-of-graphics: 4ta libreria, paradigma declarativo distinto
+  # a las otras 3 (variables + marks en vez de un widget por tipo).
+  graphic: ^2.6.0
 
 dev_dependencies:
   flutter_test:

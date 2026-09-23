@@ -48,7 +48,7 @@ class AppStrings {
 class ApiConfig {
   ApiConfig._();
 
-  static const String baseUrl = 'https://api.frankfurter.dev/v1';
+  static const String baseUrl = 'https://api.frankfurter.dev/v2';
 
   static Uri currencies() => Uri.parse('$baseUrl/currencies');
 
