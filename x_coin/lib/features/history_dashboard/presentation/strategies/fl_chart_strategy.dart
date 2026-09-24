@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../../currency_converter/domain/entities/exchange_rate.dart';
 import '../../domain/chart_engine/chart_config.dart';
 import '../../domain/chart_engine/chart_enums.dart';
@@ -180,7 +181,7 @@ class FlChartStrategy implements ChartStrategy {
               getTooltipColor: (_) => AppColors.primaryNavy,
               getTooltipItems: (spots) => spots
                   .map((s) => LineTooltipItem(
-                        '${s.y.toStringAsFixed(2)}$suffix',
+                        '${CurrencyFormatter.amount(s.y)}$suffix',
                         const TextStyle(color: AppColors.textOnPrimary),
                       ))
                   .toList(),

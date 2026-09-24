@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../domain/entities/exchange_rate.dart';
 
 /// Gráfica de línea con relleno degradado que muestra "cómo cambia
@@ -43,7 +44,7 @@ class RateLineChart extends StatelessWidget {
               getTooltipItems: (spots) => spots
                   .map(
                     (s) => LineTooltipItem(
-                      s.y.toStringAsFixed(4),
+                      CurrencyFormatter.amount(s.y, decimals: 4),
                       const TextStyle(
                         color: AppColors.textOnPrimary,
                         fontWeight: FontWeight.w600,

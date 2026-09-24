@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/widgets/async_state_view.dart';
 import '../../../../core/widgets/currency_flag.dart';
 import '../../../../core/widgets/skeletons.dart';
@@ -69,6 +70,24 @@ class _RatesContent extends StatelessWidget {
 
   final RatesProvider provider;
 
+  /// Primeras 4 tasas del ranking (como antes) más COP fijada al final:
+  /// alfabéticamente COP queda fuera de las 4 primeras y, sin fijarla, la
+  /// lista seguiría sin mostrar el peso colombiano.
+  static List<MapEntry<String, double>> _featuredRanking(
+    Map<String, double> ranking,
+    String baseIso,
+  ) {
+    const pinned = 'COP';
+    final entries = ranking.entries.take(4).toList();
+    final cop = ranking[pinned];
+    if (cop != null &&
+        baseIso != pinned &&
+        !entries.any((e) => e.key == pinned)) {
+      entries.add(MapEntry(pinned, cop));
+    }
+    return entries;
+  }
+
   @override
   Widget build(BuildContext context) {
     final rate = provider.currentRate;
@@ -88,7 +107,8 @@ class _RatesContent extends StatelessWidget {
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
-                    '1 ${rate.baseCurrency} = ${rate.rateValue.toStringAsFixed(2)} '
+                    '1 ${rate.baseCurrency} = '
+                    '${CurrencyFormatter.heroRate(rate.rateValue)} '
                     '${rate.quoteCurrency}',
                     style: AppTypography.rateHero,
                   ),
@@ -128,12 +148,14 @@ class _RatesContent extends StatelessWidget {
           XCoinCard(
             child: Column(
               children: [
-                for (final entry in provider.ranking.entries.take(4))
+                for (final entry in _featuredRanking(
+                  provider.ranking,
+                  provider.rankingBase,
+                ))
                   GlobalRateTile(
                     baseIso: provider.rankingBase,
                     quoteIso: entry.key,
-                    valueLabel:
-                        entry.value.toStringAsFixed(entry.value < 1 ? 6 : 2),
+                    valueLabel: CurrencyFormatter.rate(entry.value),
                   ),
               ],
             ),

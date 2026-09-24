@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/navigation/app_tabs.dart';
 import '../../../../core/widgets/x_coin_bottom_nav_bar.dart';
 import 'converter_screen.dart';
 import 'rates_screen.dart';
@@ -10,10 +11,14 @@ import 'settings_screen.dart';
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 
-  /// Permite a pantallas hijas solicitar el cambio de pestaña.
+  /// Permite a cualquier pantalla solicitar el cambio de pestaña.
+  ///
+  /// Se conserva la firma original (Inicio la usa tal cual), pero ahora
+  /// delega en [AppTabs]: antes buscaba el `State` del shell en el árbol
+  /// de ancestros, algo imposible desde rutas empujadas con `Navigator`
+  /// como el Dashboard Analítico, que quedan por encima del shell.
   static void switchTab(BuildContext context, int index) {
-    final state = context.findAncestorStateOfType<_HomeShellState>();
-    state?._changeIndex(index);
+    AppTabs.select(index);
   }
 
   @override
@@ -21,27 +26,33 @@ class HomeShell extends StatefulWidget {
 }
 
 class _HomeShellState extends State<HomeShell> {
-  int _index = 0;
-
-  void _changeIndex(int index) {
-    setState(() => _index = index);
-  }
-
   static const _screens = [
-
     ConverterScreen(),
     RatesScreen(),
     SettingsScreen(),
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Siempre se arranca en Inicio (el notifier es estático y sobrevive
+    // a la recreación del widget, p. ej. en tests o hot restart parcial).
+    AppTabs.select(AppTabs.home);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(index: _index, children: _screens),
-      bottomNavigationBar: XCoinBottomNavBar(
-        currentIndex: _index,
-        onTap: (i) => setState(() => _index = i),
-      ),
+    return ValueListenableBuilder<int>(
+      valueListenable: AppTabs.current,
+      builder: (context, index, _) {
+        return Scaffold(
+          body: IndexedStack(index: index, children: _screens),
+          bottomNavigationBar: XCoinBottomNavBar(
+            currentIndex: index,
+            onTap: AppTabs.select,
+          ),
+        );
+      },
     );
   }
 }

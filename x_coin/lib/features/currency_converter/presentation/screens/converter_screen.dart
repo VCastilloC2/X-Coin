@@ -4,6 +4,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/widgets/async_state_view.dart';
 import '../../../../core/widgets/error_retry_snackbar.dart';
 import '../../../../core/widgets/primary_action_button.dart';
@@ -82,6 +83,10 @@ class _ConverterContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final origin = provider.origin;
+    final destination = provider.destination;
+    final converted = provider.convertedAmount;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
@@ -121,17 +126,35 @@ class _ConverterContent extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '${provider.origin?.symbol ?? ''}${provider.rawAmount}',
-                  style: AppTypography.amountInput,
+                // FittedBox: montos grandes en COP (p. ej. COP $4.052.310,00)
+                // se reducen en vez de desbordar el Row en pantallas angostas.
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '${CurrencyFormatter.symbolFor(origin?.isoCode ?? '')}'
+                      '${CurrencyFormatter.amountInput(provider.rawAmount)}',
+                      style: AppTypography.amountInput,
+                    ),
+                  ),
                 ),
-                Text(
-                  provider.convertedAmount != null
-                      ? '${provider.destination?.symbol ?? ''}'
-                          '${provider.convertedAmount!.toStringAsFixed(2)}'
-                      : '—',
-                  style: AppTypography.amountInput.copyWith(
-                    color: AppColors.primaryNavy,
+                const SizedBox(width: AppSpacing.md),
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      converted != null && destination != null
+                          ? CurrencyFormatter.money(
+                              converted,
+                              destination.isoCode,
+                            )
+                          : '—',
+                      style: AppTypography.amountInput.copyWith(
+                        color: AppColors.primaryNavy,
+                      ),
+                    ),
                   ),
                 ),
               ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/widgets/currency_flag.dart';
 import '../../domain/entities/currency.dart';
 import '../../domain/entities/rate_alert.dart';
@@ -59,7 +60,7 @@ class _RateAlertSheetState extends State<RateAlertSheet> {
         (widget.currencies.length > 1 ? widget.currencies[1] : null);
     _thresholdController = TextEditingController(
       text: widget.initialAlert != null
-          ? widget.initialAlert!.threshold.toStringAsFixed(2)
+          ? CurrencyFormatter.amount(widget.initialAlert!.threshold)
           : '',
     );
   }
@@ -81,11 +82,13 @@ class _RateAlertSheetState extends State<RateAlertSheet> {
       _base != null &&
       _quote != null &&
       _base != _quote &&
-      double.tryParse(_thresholdController.text.replaceAll(',', '.')) != null;
+      CurrencyFormatter.parseAmount(_thresholdController.text) != null;
 
   void _save() {
-    final threshold =
-        double.parse(_thresholdController.text.replaceAll(',', '.'));
+    // parseAmount entiende "4100", "4100,5", "4.100" y "4.100,50": antes,
+    // escribir "4.100" (miles en es_CO) se leía como 4,1.
+    final threshold = CurrencyFormatter.parseAmount(_thresholdController.text);
+    if (threshold == null) return;
     Navigator.of(context).pop(
       RateAlert(
         baseCurrency: _base!.isoCode,

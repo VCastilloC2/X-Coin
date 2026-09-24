@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'core/constants/app_strings.dart';
 import 'core/theme/app_theme.dart';
+import 'core/utils/currency_formatter.dart';
 import 'features/currency_converter/data/repositories/currency_repository_impl.dart';
+import 'features/currency_converter/data/repositories/supplemented_currency_repository.dart';
 import 'features/currency_converter/domain/repositories/currency_repository.dart';
 import 'features/currency_converter/presentation/providers/currency_converter_provider.dart';
 import 'features/currency_converter/presentation/providers/rates_provider.dart';
@@ -10,6 +14,9 @@ import 'features/currency_converter/presentation/providers/settings_provider.dar
 import 'features/currency_converter/presentation/screens/home_shell.dart';
 
 void main() {
+  // Locale por defecto de `intl`: cualquier NumberFormat/DateFormat sin
+  // locale explícito usará la convención colombiana (`4.100,50`).
+  Intl.defaultLocale = CurrencyFormatter.locale;
   runApp(const XCoinApp());
 }
 
@@ -42,7 +49,14 @@ class XCoinApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<CurrencyRepository>(create: (_) => CurrencyRepositoryImpl()),
+        // Frankfurter (BCE) no publica COP: el decorador lo añade al
+        // catálogo, tasas, ranking e histórico sin tocar la
+        // implementación original ni la capa de presentación.
+        Provider<CurrencyRepository>(
+          create: (_) => SupplementedCurrencyRepository(
+            delegate: CurrencyRepositoryImpl(),
+          ),
+        ),
 
         ChangeNotifierProvider<SettingsProvider>(
           create: (_) => SettingsProvider(),
@@ -93,6 +107,17 @@ class XCoinApp extends StatelessWidget {
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
             themeMode: settings.darkMode ? ThemeMode.dark : ThemeMode.light,
+            locale: const Locale('es', 'CO'),
+            supportedLocales: const [
+              Locale('es', 'CO'),
+              Locale('es'),
+              Locale('en'),
+            ],
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
             home: const HomeShell(),
           );
         },

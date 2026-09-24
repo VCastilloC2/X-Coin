@@ -1,3 +1,5 @@
+import '../../../../core/utils/currency_formatter.dart';
+
 /// Dirección del umbral de una alerta de tasa.
 enum RateAlertDirection { above, below }
 
@@ -37,10 +39,10 @@ class RateAlert {
   }
 
   /// Descripción legible mostrada como subtítulo en Ajustes, ej.:
-  /// "Notificar si 1 USD > 4100.00 COP".
+  /// "Notificar si 1 USD > 4.100,00 COP".
   String get description {
     final symbol = direction == RateAlertDirection.above ? '>' : '<';
     return 'Notificar si 1 $baseCurrency $symbol '
-        '${threshold.toStringAsFixed(2)} $quoteCurrency';
+        '${CurrencyFormatter.amount(threshold)} $quoteCurrency';
   }
 }

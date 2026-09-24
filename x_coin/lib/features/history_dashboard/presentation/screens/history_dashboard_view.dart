@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../core/navigation/app_tabs.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/async_state_view.dart';
 import '../../../../core/widgets/skeletons.dart';
 import '../../../../core/widgets/x_coin_app_bar.dart';
+import '../../../../core/widgets/x_coin_bottom_nav_bar.dart';
 import '../../../../core/widgets/x_coin_card.dart';
 import '../../../currency_converter/presentation/providers/currency_converter_provider.dart'
     show ViewStatus;
@@ -43,6 +45,16 @@ class _HistoryDashboardViewState extends State<HistoryDashboardView> {
     });
   }
 
+  /// El dashboard se abre con `Navigator.push` desde Historial, así que
+  /// cubre al `HomeShell` y su barra inferior. Para que Inicio /
+  /// Historial / Ajustes sigan disponibles aquí: se activa la pestaña
+  /// elegida y se cierra esta ruta, dejando visible el shell ya
+  /// posicionado en esa pestaña.
+  void _goToTab(int index) {
+    AppTabs.select(index);
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -50,6 +62,11 @@ class _HistoryDashboardViewState extends State<HistoryDashboardView> {
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: const XCoinAppBar(),
+        bottomNavigationBar: XCoinBottomNavBar(
+          // El dashboard es una vista de Historial: esa pestaña queda marcada.
+          currentIndex: AppTabs.history,
+          onTap: _goToTab,
+        ),
         body: Consumer<RatesProvider>(
           builder: (context, rates, _) {
             if (rates.status == ViewStatus.loading || rates.status == ViewStatus.initial) {

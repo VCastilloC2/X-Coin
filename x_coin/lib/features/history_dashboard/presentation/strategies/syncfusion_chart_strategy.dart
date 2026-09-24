@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../../currency_converter/domain/entities/exchange_rate.dart';
 import '../../domain/chart_engine/chart_config.dart';
 import '../../domain/chart_engine/chart_enums.dart';
@@ -372,6 +373,7 @@ class SyncfusionChartStrategy implements ChartStrategy {
         primaryXAxis: DateTimeAxis(isVisible: !compact, majorGridLines: const MajorGridLines(width: 0)),
         primaryYAxis: NumericAxis(
           isVisible: !compact,
+          numberFormat: CurrencyFormatter.axisFormat(),
           minimum: minimum,
           maximum: maximum,
           majorGridLines: MajorGridLines(width: style.showGrid ? 0.5 : 0),
