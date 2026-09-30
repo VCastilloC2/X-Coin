@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/navigation/app_tabs.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -69,7 +70,8 @@ class _HistoryDashboardViewState extends State<HistoryDashboardView> {
         ),
         body: Consumer<RatesProvider>(
           builder: (context, rates, _) {
-            if (rates.status == ViewStatus.loading || rates.status == ViewStatus.initial) {
+            if (rates.status == ViewStatus.loading ||
+                rates.status == ViewStatus.initial) {
               return const RatesSkeleton();
             }
             if (rates.status == ViewStatus.error) {
@@ -101,10 +103,7 @@ class _DashboardContent extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.md),
       children: [
-        Text(
-          'Dashboard Analítico Histórico',
-          style: AppTypography.screenTitle,
-        ),
+        Text('Dashboard Analítico Histórico', style: AppTypography.screenTitle),
         const SizedBox(height: AppSpacing.xs),
         Text(
           '${rates.base}/${rates.quote} · ${rates.history.length} puntos en memoria '
@@ -146,6 +145,8 @@ class _DashboardContent extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(config.type.description, style: AppTypography.caption),
                 const SizedBox(height: AppSpacing.sm),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 220),
@@ -217,7 +218,11 @@ class _CatalogSummary extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Row(
           children: [
-            const Icon(Icons.info_outline, size: 16, color: AppColors.textSecondary),
+            const Icon(
+              Icons.info_outline,
+              size: 16,
+              color: AppColors.textSecondary,
+            ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Text(
