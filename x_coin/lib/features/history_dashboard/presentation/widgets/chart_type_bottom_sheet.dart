@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -19,7 +20,9 @@ Future<void> showChartTypeBottomSheet({
     backgroundColor: AppColors.surface,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusLg)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(AppSpacing.radiusLg),
+      ),
     ),
     builder: (context) {
       return StatefulBuilder(
@@ -46,7 +49,9 @@ Future<void> showChartTypeBottomSheet({
                       margin: const EdgeInsets.only(bottom: AppSpacing.md),
                       decoration: BoxDecoration(
                         color: AppColors.divider,
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusPill,
+                        ),
                       ),
                     ),
                   ),
@@ -58,7 +63,11 @@ Future<void> showChartTypeBottomSheet({
                         Padding(
                           padding: const EdgeInsets.only(right: AppSpacing.sm),
                           child: ChoiceChip(
-                            label: Text(category == ChartCategory.basic ? 'Básicas (20)' : 'Avanzadas (12)'),
+                            label: Text(
+                              category == ChartCategory.basic
+                                  ? 'Básicas (20)'
+                                  : 'Avanzadas (12)',
+                            ),
                             selected: category == selectedCategory,
                             onSelected: (_) {
                               onCategoryChanged(category);
@@ -74,15 +83,29 @@ Future<void> showChartTypeBottomSheet({
                     child: ListView.separated(
                       shrinkWrap: true,
                       itemCount: types.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1, color: AppColors.divider),
+                      separatorBuilder: (_, __) =>
+                          const Divider(height: 1, color: AppColors.divider),
                       itemBuilder: (context, i) {
                         final type = types[i];
                         final isSelected = type == selectedType;
                         return ListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: Text(type.displayName, style: AppTypography.body),
+                          title: Text(
+                            type.displayName,
+                            style: AppTypography.body,
+                          ),
+                          subtitle: Text(
+                            type.description,
+                            style: AppTypography.caption,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          isThreeLine: true,
                           trailing: isSelected
-                              ? const Icon(Icons.check_circle, color: AppColors.primaryNavy)
+                              ? const Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.primaryNavy,
+                                )
                               : null,
                           onTap: () {
                             onTypeChanged(type);
