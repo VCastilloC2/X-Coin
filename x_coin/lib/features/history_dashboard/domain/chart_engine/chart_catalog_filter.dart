@@ -29,8 +29,9 @@ String normalizeSearchText(String input) {
 
 /// Lógica pura de filtrado (sin Flutter): fácil de testear.
 ///
-/// Búsqueda: cada palabra escrita debe aparecer en el título O en el
-/// nombre de la categoría de la gráfica (AND entre palabras).
+/// Opera sobre las gráficas de UNA librería (32). Búsqueda: cada palabra
+/// escrita debe aparecer en el título O en el nombre de la categoría de
+/// la gráfica (AND entre palabras).
 /// Categoría: filtro independiente; `null` = todas.
 class ChartCatalogFilter {
   ChartCatalogFilter(List<ChartConfig> source)
@@ -38,7 +39,7 @@ class ChartCatalogFilter {
         _haystack = {
           for (final c in source)
             c.id: normalizeSearchText(
-              '${c.title} ${c.category.singularLabel} ${c.category.label}',
+              '${c.type.displayName} ${c.category.singularLabel} ${c.category.label}',
             ),
         };
 

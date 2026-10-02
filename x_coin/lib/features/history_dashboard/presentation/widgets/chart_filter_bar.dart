@@ -7,10 +7,12 @@ import '../../../../core/theme/app_typography.dart';
 import '../../domain/chart_engine/chart_catalog_filter.dart';
 import '../../domain/chart_engine/chart_enums.dart';
 import '../providers/chart_filter_provider.dart';
+import 'library_segmented_selector.dart';
 
-/// Buscador en tiempo real + ChoiceChips por categoría.
-/// Ambos escriben en el mismo [ChartFilterProvider], por eso siempre
-/// están sincronizados.
+/// Selector de librería + buscador en tiempo real + ChoiceChips por
+/// categoría. Todo escribe en el mismo [ChartFilterProvider], por eso
+/// siempre están sincronizados. El selector de librería es el widget
+/// `LibrarySegmentedSelector` ya existente, reutilizado sin cambios.
 class ChartFilterBar extends StatefulWidget {
   const ChartFilterBar({super.key});
 
@@ -39,6 +41,11 @@ class _ChartFilterBarState extends State<ChartFilterBar> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        LibrarySegmentedSelector(
+          selected: filter.library,
+          onSelected: context.read<ChartFilterProvider>().selectLibrary,
+        ),
+        const SizedBox(height: AppSpacing.sm),
         TextField(
           controller: _controller,
           onChanged: context.read<ChartFilterProvider>().setQuery,
@@ -80,7 +87,8 @@ class _ChartFilterBarState extends State<ChartFilterBar> {
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          '${filter.visible.length} de ${filter.countFor(null)} gráficas',
+          '${filter.visible.length} de ${filter.countFor(null)} gráficas · '
+          '${filter.library.label}',
           style: AppTypography.caption,
         ),
       ],

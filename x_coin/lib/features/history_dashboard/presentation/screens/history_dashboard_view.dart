@@ -13,14 +13,16 @@ import '../../../currency_converter/presentation/providers/currency_converter_pr
     show ViewStatus;
 import '../../../currency_converter/presentation/providers/rates_provider.dart';
 import '../../../currency_converter/presentation/widgets/range_selector.dart';
+import '../../domain/chart_engine/chart_enums.dart';
 import '../providers/chart_filter_provider.dart';
 import '../widgets/chart_card.dart';
 import '../widgets/chart_filter_bar.dart';
 
 /// Pantalla "Dashboard Analítico Histórico".
 ///
-/// Capa de UI/UX sobre el catálogo de gráficas existente: tarjetas con
-/// título y descripción + buscador + filtro por categoría. Las gráficas
+/// Capa de UI/UX sobre el catálogo existente: selector de librería,
+/// 32 tarjetas (título + descripción) de la librería activa, buscador y
+/// filtro por categoría. Las gráficas
 /// se siguen construyendo con `ChartStrategyFactory` (sin cambios) y los
 /// datos siguen viniendo de `RatesProvider.history` (sin nuevas peticiones).
 class HistoryDashboardView extends StatefulWidget {
@@ -106,7 +108,7 @@ class _DashboardContent extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.lg,
             ),
-            // Lazy: solo se construyen (y cargan) las tarjetas visibles.
+            // Lazy: solo se construyen las tarjetas que entran en pantalla.
             itemCount: _headerItems + (isEmpty ? 1 : visible.length),
             separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
             itemBuilder: (context, index) {
@@ -119,7 +121,8 @@ class _DashboardContent extends StatelessWidget {
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       '${rates.base}/${rates.quote} · '
-                      '${rates.history.length} puntos en memoria',
+                      '${rates.history.length} puntos en memoria · '
+                      '${filter.library.packageName}',
                       style: AppTypography.caption,
                     ),
                   ],

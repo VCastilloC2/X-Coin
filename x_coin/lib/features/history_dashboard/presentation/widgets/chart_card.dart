@@ -30,7 +30,7 @@ class ChartCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: Text(config.title, style: AppTypography.bodyStrong)),
+              Expanded(child: Text(config.type.displayName, style: AppTypography.bodyStrong)),
               const SizedBox(width: AppSpacing.sm),
               _CategoryBadge(label: config.category.singularLabel),
             ],
