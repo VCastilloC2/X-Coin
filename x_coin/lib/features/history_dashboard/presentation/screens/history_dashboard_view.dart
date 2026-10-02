@@ -9,26 +9,20 @@ import '../../../../core/widgets/async_state_view.dart';
 import '../../../../core/widgets/skeletons.dart';
 import '../../../../core/widgets/x_coin_app_bar.dart';
 import '../../../../core/widgets/x_coin_bottom_nav_bar.dart';
-import '../../../../core/widgets/x_coin_card.dart';
 import '../../../currency_converter/presentation/providers/currency_converter_provider.dart'
     show ViewStatus;
 import '../../../currency_converter/presentation/providers/rates_provider.dart';
 import '../../../currency_converter/presentation/widgets/range_selector.dart';
-import '../../domain/chart_engine/chart_enums.dart';
-import '../providers/history_dashboard_provider.dart';
-import '../strategies/chart_strategy_factory.dart';
-import '../widgets/chart_type_bottom_sheet.dart';
-import '../widgets/library_segmented_selector.dart';
+import '../providers/chart_filter_provider.dart';
+import '../widgets/chart_card.dart';
+import '../widgets/chart_filter_bar.dart';
 
 /// Pantalla "Dashboard Analítico Histórico".
 ///
-/// El único disparador de red de esta pantalla es
-/// `RatesProvider.load()` / `selectRange()` — ya existente en la app
-/// para poblar `ApiConfig.historicalRange`. Todo lo que ocurre dentro
-/// de este widget (cambiar librería, cambiar tipo de gráfica, cambiar
-/// categoría) opera exclusivamente sobre `RatesProvider.history`, que
-/// ya está en memoria: por diseño, ninguna de esas acciones puede
-/// disparar un nuevo request HTTP.
+/// Capa de UI/UX sobre el catálogo de gráficas existente: tarjetas con
+/// título y descripción + buscador + filtro por categoría. Las gráficas
+/// se siguen construyendo con `ChartStrategyFactory` (sin cambios) y los
+/// datos siguen viniendo de `RatesProvider.history` (sin nuevas peticiones).
 class HistoryDashboardView extends StatefulWidget {
   const HistoryDashboardView({super.key});
 
@@ -46,11 +40,6 @@ class _HistoryDashboardViewState extends State<HistoryDashboardView> {
     });
   }
 
-  /// El dashboard se abre con `Navigator.push` desde Historial, así que
-  /// cubre al `HomeShell` y su barra inferior. Para que Inicio /
-  /// Historial / Ajustes sigan disponibles aquí: se activa la pestaña
-  /// elegida y se cierra esta ruta, dejando visible el shell ya
-  /// posicionado en esa pestaña.
   void _goToTab(int index) {
     AppTabs.select(index);
     Navigator.of(context).popUntil((route) => route.isFirst);
@@ -59,12 +48,11 @@ class _HistoryDashboardViewState extends State<HistoryDashboardView> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => HistoryDashboardProvider(),
+      create: (_) => ChartFilterProvider(),
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: const XCoinAppBar(),
         bottomNavigationBar: XCoinBottomNavBar(
-          // El dashboard es una vista de Historial: esa pestaña queda marcada.
           currentIndex: AppTabs.history,
           onTap: _goToTab,
         ),
@@ -94,145 +82,93 @@ class _DashboardContent extends StatelessWidget {
 
   final RatesProvider rates;
 
+  // Items fijos antes de las tarjetas: título + selector de rango.
+  static const int _headerItems = 2;
+
   @override
   Widget build(BuildContext context) {
-    final dashboard = context.watch<HistoryDashboardProvider>();
-    final config = dashboard.activeConfig;
-    final strategy = ChartStrategyFactory.strategyFor(dashboard.library);
+    final filter = context.watch<ChartFilterProvider>();
+    final visible = filter.visible;
+    final isEmpty = visible.isEmpty;
 
-    return ListView(
-      padding: const EdgeInsets.all(AppSpacing.md),
+    return Column(
       children: [
-        Text('Dashboard Analítico Histórico', style: AppTypography.screenTitle),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          '${rates.base}/${rates.quote} · ${rates.history.length} puntos en memoria '
-          '(catálogo: 128 gráficas · 4 librerías × 32 tipos)',
-          style: AppTypography.caption,
+        // Zona fija: el buscador y las categorías siempre a mano.
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md, AppSpacing.md, AppSpacing.md, AppSpacing.sm,
+          ),
+          child: const ChartFilterBar(),
         ),
-        const SizedBox(height: AppSpacing.md),
-        RangeSelector(
-          selected: rates.selectedRange,
-          onSelected: rates.selectRange, // Único punto que sí refetchea (cambia el rango real).
-        ),
-        const SizedBox(height: AppSpacing.md),
-        XCoinCard(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                LibrarySegmentedSelector(
-                  selected: dashboard.library,
-                  onSelected: dashboard.selectLibrary,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Expanded(
+          child: ListView.separated(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.lg,
+            ),
+            // Lazy: solo se construyen (y cargan) las tarjetas visibles.
+            itemCount: _headerItems + (isEmpty ? 1 : visible.length),
+            separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        config.title,
-                        style: AppTypography.bodyStrong,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    _ChangeTypeButton(
-                      category: dashboard.category,
-                      type: dashboard.type,
-                      onCategoryChanged: dashboard.selectCategory,
-                      onTypeChanged: dashboard.selectType,
+                    Text('Dashboard Analítico Histórico',
+                        style: AppTypography.screenTitle),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      '${rates.base}/${rates.quote} · '
+                      '${rates.history.length} puntos en memoria',
+                      style: AppTypography.caption,
                     ),
                   ],
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(config.type.description, style: AppTypography.caption),
-                const SizedBox(height: AppSpacing.sm),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  child: KeyedSubtree(
-                    key: ValueKey(config.id),
-                    child: strategy.build(
-                      context: context,
-                      config: config,
-                      points: rates.history,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+                );
+              }
+              if (index == 1) {
+                return RangeSelector(
+                  selected: rates.selectedRange,
+                  onSelected: rates.selectRange,
+                );
+              }
+              if (isEmpty) return _EmptyResults(onClear: filter.clear);
+
+              final config = visible[index - _headerItems];
+              return ChartCard(
+                key: ValueKey(config.id), // identidad estable al filtrar
+                config: config,
+                points: rates.history,
+              );
+            },
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
-        _CatalogSummary(library: dashboard.library),
       ],
     );
   }
 }
 
-class _ChangeTypeButton extends StatelessWidget {
-  const _ChangeTypeButton({
-    required this.category,
-    required this.type,
-    required this.onCategoryChanged,
-    required this.onTypeChanged,
-  });
+class _EmptyResults extends StatelessWidget {
+  const _EmptyResults({required this.onClear});
 
-  final ChartCategory category;
-  final ChartType type;
-  final ValueChanged<ChartCategory> onCategoryChanged;
-  final ValueChanged<ChartType> onTypeChanged;
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: () => showChartTypeBottomSheet(
-        context: context,
-        selectedCategory: category,
-        selectedType: type,
-        onCategoryChanged: onCategoryChanged,
-        onTypeChanged: onTypeChanged,
-      ),
-      icon: const Icon(Icons.tune, size: 16),
-      label: const Text('Tipo'),
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.primaryNavy,
-        side: const BorderSide(color: AppColors.divider),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-        ),
-      ),
-    );
-  }
-}
-
-class _CatalogSummary extends StatelessWidget {
-  const _CatalogSummary({required this.library});
-
-  final ChartLibrary library;
-
-  @override
-  Widget build(BuildContext context) {
-    return XCoinCard(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Row(
-          children: [
-            const Icon(
-              Icons.info_outline,
-              size: 16,
-              color: AppColors.textSecondary,
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Text(
-                '${library.label} (${library.packageName}) · 32 gráficas disponibles '
-                'para este par, sin nuevas peticiones a Frankfurter.',
-                style: AppTypography.caption,
-              ),
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
+      child: Column(
+        children: [
+          const Icon(Icons.search_off, size: 40, color: AppColors.textSecondary),
+          const SizedBox(height: AppSpacing.sm),
+          Text('Sin resultados', style: AppTypography.bodyStrong),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            'Prueba con otro término o cambia la categoría.',
+            style: AppTypography.caption,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          OutlinedButton(onPressed: onClear, child: const Text('Limpiar filtros')),
+        ],
       ),
     );
   }
