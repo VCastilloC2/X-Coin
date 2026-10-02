@@ -1,3 +1,5 @@
+import 'dart:ui' show FontFeature;
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -7,6 +9,7 @@ import '../../../../core/widgets/x_coin_card.dart';
 import '../../../currency_converter/domain/entities/exchange_rate.dart';
 import '../../domain/chart_engine/chart_catalog_filter.dart';
 import '../../domain/chart_engine/chart_config.dart';
+import '../../domain/chart_engine/chart_numbering.dart';
 import '../strategies/chart_strategy_factory.dart';
 
 /// Tarjeta contenedora: título + categoría + descripción + gráfica.
@@ -30,6 +33,8 @@ class ChartCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _NumberBadge(label: config.numberLabel),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(child: Text(config.type.displayName, style: AppTypography.bodyStrong)),
               const SizedBox(width: AppSpacing.sm),
               _CategoryBadge(label: config.category.singularLabel),
@@ -65,6 +70,30 @@ class _CategoryBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
       ),
       child: Text(label, style: AppTypography.caption),
+    );
+  }
+}
+
+/// Badge con el número de orden (#01…#32) dentro de la librería activa.
+class _NumberBadge extends StatelessWidget {
+  const _NumberBadge({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.primaryNavy,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+      ),
+      child: Text(
+        label,
+        style: AppTypography.sectionLabel.copyWith(
+          color: AppColors.textOnPrimary,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        ),
+      ),
     );
   }
 }
