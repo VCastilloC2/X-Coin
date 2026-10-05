@@ -37,7 +37,7 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^2.0.0
   # Manejo de estado sencillo y explícito (ChangeNotifier)
   provider: ^6.1.2
   # Cliente HTTP para consumir la API de tasas de cambio (Frankfurter)
@@ -54,7 +54,7 @@ dependencies:
   # --- Dashboard Analitico Historico: 4 librerias de graficos ---
   # Series nativas de velas/OHLC/rango (candlestick, hilo, bollinger
   # via RangeAreaSeries) que fl_chart no ofrece.
-  syncfusion_flutter_charts: ^34.2.9
+  syncfusion_flutter_charts: ^35.1.37
   # Sucesor mantenido por la comunidad de charts_flutter, el paquete
   # que Google publicaba como "Google Charts" para Flutter
   # (descontinuado desde 2020, no compatible con null-safety).
