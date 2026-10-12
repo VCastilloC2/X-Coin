@@ -99,3 +99,26 @@ class Currency {
     );
   }
 }
+```
+
+##  Capturas de la aplicación
+
+### Pantalla principal
+<p align="center">
+  <img src="X - Coin.png" alt="X - Coin">
+</p>
+
+### Histrorial de tasas de cambio
+<p align="center">
+  <img src="X - Coin 1.png" alt="Historial X - Coin">
+</p>
+
+### Dashboard Analítico
+<p align="center">
+  <img src="X - Coin 2.png" alt="sor de monedas">
+</p>
+
+### Ajustes
+<p align="center">
+  <img src="X - Coin 3.png" alt="sor de monedas">
+</p>
