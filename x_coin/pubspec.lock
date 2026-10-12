@@ -305,10 +305,10 @@ packages:
     dependency: "direct main"
     description:
       name: shared_preferences
-      sha256: c3025c5534b01739267eb7d76959bbc25a6d10f6988e1c2a3036940133dd10bf
+      sha256: "1e85e0dccf5b4a016077fea7dfbb4a7cb39c759ac1596fcf60c06deadb7da91f"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.5"
+    version: "2.5.6"
   shared_preferences_android:
     dependency: transitive
     description:
@@ -398,18 +398,18 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: "21acd11bc8d24488a25f01fed4ec751148886c7a51a22f67c51d79dfc5bbb7b0"
+      sha256: b02f75824f68a4ef4af4682e065691b410adf77d69a9dd844df43063c8c36444
       url: "https://pub.dev"
     source: hosted
-    version: "35.1.37"
+    version: "35.1.39"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: cf44d456b6bf4134fb0e085d83939256258dd24d09e6e522f4190ff6d82efcde
+      sha256: "58eb8e791756a6da3cce29889f0ff0caec93703ef5ef7c8467078428c508b22a"
       url: "https://pub.dev"
     source: hosted
-    version: "35.1.37"
+    version: "35.1.39"
   term_glyph:
     dependency: transitive
     description:
